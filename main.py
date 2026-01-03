@@ -1,25 +1,14 @@
-import os
 from ai.ai_engine import generate_explanation
-from nlp.nlp_engine import validate_request
-from system.system_guard import rate_limit, retry_api, cache
+from nlp.nlp_engine import clean_topic
+from system.system_guard import allow_request
 
+def get_explanation(topic: str, level: int) -> str:
+    if not allow_request():
+        return "⚠️ Too many requests. Please wait."
 
-# main.py
-from ai.ai_engine import generate_explanation
+    topic = clean_topic(topic)
 
-def get_explanation(topic, level):
+    if not topic:
+        return "❌ Invalid topic."
+
     return generate_explanation(topic, level)
-
-
-# CLI test (optional)
-if __name__ == "__main__":
-    topic = input("Enter topic: ")
-    level = int(input("Enter level (1-5): "))
-
-    try:
-        result = get_explanation(topic, level)
-        print(result)
-    except Exception as e:
-        print("ERROR:", e)
-
-

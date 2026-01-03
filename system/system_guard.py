@@ -1,29 +1,13 @@
 import time
-from functools import lru_cache
 
-REQUEST_TIMES = []
-WINDOW = 60
+_last_call = 0
 
-def rate_limit(max_requests: int):
-    global REQUEST_TIMES
+def allow_request(min_gap=2):
+    global _last_call
     now = time.time()
 
-    REQUEST_TIMES = [t for t in REQUEST_TIMES if now - t < WINDOW]
+    if now - _last_call < min_gap:
+        return False
 
-    if len(REQUEST_TIMES) >= max_requests:
-        raise Exception("Rate limit exceeded. Try again later.")
-
-    REQUEST_TIMES.append(now)
-
-def retry_api(call, retries=2):
-    for attempt in range(retries + 1):
-        try:
-            return call()
-        except Exception as e:
-            if attempt == retries:
-                raise Exception(f"GenAI failed after retries: {str(e)}")
-            time.sleep(2)
-
-@lru_cache(maxsize=100)
-def cache(topic: str, level: int):
-    return None
+    _last_call = now
+    return True
