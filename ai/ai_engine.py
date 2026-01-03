@@ -11,3 +11,8 @@ def ensure_same_concept(responses: list):
     for response in responses[1:]:
         if not any(word in response for word in base_keywords):
             raise Exception("Concept drift detected between levels")
+
+# ai/ai_engine.py
+
+def generate_explanation(topic, level):
+    return f"Explanation of {topic} at level {level}"
