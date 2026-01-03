@@ -1,33 +1,16 @@
-import time
-from ai.prompts import BASE_PROMPT, LEVEL_RULES
+LEVEL_PROMPTS = {
+    1: """Explain {topic} to a child using a simple analogy.
+Avoid technical words.""",
 
-class GenAIError(Exception):
-    pass
+    2: """Explain {topic} to a school student.
+Introduce basic terms with a real-life example.""",
 
-def _mock_slow_api(prompt: str) -> str:
-    time.sleep(1)  # Simulating slow GenAI API
+    3: """Explain {topic} to a college student.
+Include how it works and one practical application.""",
 
-    if "error" in prompt.lower():
-        raise GenAIError("GenAI API failed")
+    4: """Explain {topic} to an engineer.
+Include internal mechanisms, workflows, or architecture.""",
 
-    return f"""
-Explanation Generated Successfully
-
-{prompt[:250]}
-
-Real-life Example:
-Example related to the topic.
-"""
-
-def generate_explanation(topic: str, level: int) -> str:
-    if level not in LEVEL_RULES:
-        raise ValueError("Invalid explanation level")
-
-    prompt = f"""
-{BASE_PROMPT}
-
-Topic: {topic}
-Level {level}: {LEVEL_RULES[level]}
-"""
-
-    return _mock_slow_api(prompt)
+    5: """Explain {topic} to an expert.
+Include limitations, trade-offs, and advanced insights."""
+}

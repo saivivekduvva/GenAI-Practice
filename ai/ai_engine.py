@@ -1,18 +1,20 @@
-def validate_request(topic: str, level: int):
-    if not topic or not isinstance(topic, str):
-        raise ValueError("Topic must be a valid string")
+import os
+import google.generativeai as genai
+from ai.prompts import LEVEL_PROMPTS
 
-    if level not in [1, 2, 3, 4, 5]:
-        raise ValueError("Level must be between 1 and 5")
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
-def ensure_same_concept(responses: list):
-    base_keywords = responses[0].split()[:5]
+model = genai.GenerativeModel("gemini-1.5-flash")
 
-    for response in responses[1:]:
-        if not any(word in response for word in base_keywords):
-            raise Exception("Concept drift detected between levels")
+def generate_explanation(topic: str, level: int) -> str:
+    prompt = LEVEL_PROMPTS[level].format(topic=topic)
 
-# ai/ai_engine.py
+    response = model.generate_content(
+        prompt,
+        generation_config={
+            "temperature": 0.4,
+            "max_output_tokens": 400
+        }
+    )
 
-def generate_explanation(topic, level):
-    return f"Explanation of {topic} at level {level}"
+    return response.text.strip()
